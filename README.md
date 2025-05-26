@@ -1,91 +1,120 @@
-# Regime Detection Project for European Assets
+  # **Regime Detection Project for European Assets**  
 
-## Overview
+  ---
 
-This project implements a regime detection algorithm for a portfolio of European assets. It uses a Hidden Markov Model (HMM) to identify different market regimes (e.g., Bull, Bear, Sideways) based on asset returns. Additionally, it includes methods for detecting volatility regimes using K-means clustering and analyzing correlation regimes.
+  ### **Overview**
+  
+  This notebook implements a regime detection algorithm for a portfolio of European assets using data-driven techniques to identify distinct market environments.
+  - **Market Regimes (HMM):** Bull, Bear, Sideways
+  - **Volatility Regimes (K-means):** Low, Medium, High
+  - **Correlation Regimes (K-means):** Low, High
+  
 
-The project is based on scripts provided by the user, which have been organized, updated, and tested.
+  ---
 
-## Project Structure
+  ### **Project Structure**
+  ```bash
+  regime_detection_project/
+  ├── data/
+  │   ├── raw/           # Raw data (dummy or downloaded)
+  │   └── processed/     # Cleaned price and return data
+  ├── results/
+  │   ├── figures/       # Generated plots and regime visualizations
+  │   └── tables/        # Summary statistics and regime tables
+  ├── src/
+  │   ├── collect_data.py     # Download or load raw data
+  │   ├── process_data.py     # Clean and compute returns
+  │   └── regime_detection.py # HMM and clustering implementation
+  ├── regime_analysis.ipynb    # Notebook walkthrough of the analysis
+  └── README.md                # Project description and instructions
+  ```
 
-The project is organized as follows:
+  ---
 
-```
-regime_detection_project/
-├── data/
-│   ├── raw/          # Raw data downloaded (or dummy data)
-│   └── processed/    # Processed data ready for analysis
-├── results/
-│   ├── figures/      # Generated plots and figures
-│   └── tables/       # Generated tables and summary statistics
-├── src/
-│   ├── collect_data.py     # Script to download asset data
-│   ├── process_data.py     # Script to process raw data
-│   └── regime_detection.py # Main script for regime detection and analysis
-├── regime_analysis.ipynb # Jupyter notebook for interactive analysis and visualization
-├── requirements.txt  # Python dependencies
-└── README.md         # This file
-```
+  ## Interactive Analysis
 
-## Installation
+  ---
 
-1.  **Clone or download the project.**
-2.  **Navigate to the project directory:**
-    ```bash
-    cd regime_detection_project
-    ```
-3.  **Install the required Python dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *Note: You will also need Jupyter Notebook or JupyterLab to run the `.ipynb` file.* You can install it via pip:
-    ```bash
-    pip install jupyterlab
-    ```
+  ### 1. Introduction
+  
+  In this section, we define market, volatility, and correlation regimes and discuss their relevance for portfolio management.
 
-## Usage
+  - Market regimes capture return behaviors (Bull vs Bear vs Sideways).
+  - Volatility regimes classify periods of calm versus turbulence.
+  - Correlation regimes highlight asset co-movement patterns.
+  
 
-There are two main ways to run the analysis:
+  ---
 
-**Option 1: Using the Jupyter Notebook (Recommended)**
+  ### 2. Data Processing
+  ```python
+  # Load processed asset prices and compute log returns
+  df_prices = pd.read_csv('data/processed/prices.csv', index_col=0, parse_dates=True)
+  df_returns = np.log(df_prices / df_prices.shift(1)).dropna()
 
-1.  **Start JupyterLab:**
-    ```bash
-    jupyter lab
-    ```
-2.  **Open `regime_analysis.ipynb`:** Navigate to the notebook file in the JupyterLab interface and open it.
-3.  **Run the cells:** Execute the cells sequentially. The notebook explains the intuition behind each step, runs the data processing and regime detection scripts, and displays the resulting plots directly.
+  df_returns.describe()
+  ```
 
-**Option 2: Running Python Scripts Directly**
+  ---
 
-1.  **Data Collection (Known Limitation):**
-    The `src/collect_data.py` script is intended to download historical data for European ETFs and indices using `yfinance`. However, during testing, `yfinance` failed to retrieve data for the specified European symbols (error: "No timezone found, symbol may be delisted").
-    *   **Current State:** To allow the project pipeline to run, dummy data files (`*.csv`) have been placed in the `data/raw/` directory. These files contain placeholder data for a short period.
-    *   **Future Work:** To use live data, you may need to find alternative, valid ticker symbols for European assets compatible with `yfinance` or use a different data provider/API and modify `src/collect_data.py` accordingly. If you modify the script, run it:
-        ```bash
-        python src/collect_data.py
-        ```
+  ### 3. Regime Detection
+  
+  - **Market Regimes (HMM):** Fit HMM to multivariate returns
+  - **Volatility Regimes (K-means):** Cluster rolling volatilities
+  - **Correlation Regimes (K-means):** Cluster rolling correlation matrices
+  
 
-2.  **Data Processing:**
-    Run the data processing script. This will load the raw (dummy or real) data, clean it, calculate returns, and save the processed files (`asset_prices.csv`, `asset_returns.csv`, etc.) into the `data/processed/` directory.
-    ```bash
-    python src/process_data.py
-    ```
+  ---
 
-3.  **Regime Detection:**
-    Run the main regime detection script. This script loads the processed data, trains the HMM and K-means models, identifies market, volatility, and correlation regimes, generates plots (saved in `results/figures/`), and potentially saves model files (in `models/`) and summary tables (in `results/tables/`).
-    ```bash
-    python src/regime_detection.py
-    ```
+  ### 4. Visualizing Results
+  ```python
+  # Display saved regime plots
+  from IPython.display import Image, display
+  for fname in ['market_regimes.png', 'volatility_regimes.png', 'correlation_regimes.png']:
+      display(Image(filename=f'results/figures/{fname}'))
+  ```
 
-## Outputs
 
-*   **Processed Data:** Located in `data/processed/`. Includes asset prices, returns, correlations, etc.
-*   **Models:** Trained models (like HMM) might be saved in the `models/` directory.
-*   **Results:** Figures visualizing the detected regimes are saved in `results/figures/`. Summary statistics or tables might be saved in `results/tables/`.
-*   **Notebook:** `regime_analysis.ipynb` provides an interactive walkthrough of the process and displays results inline.
+  **Figure Placeholders**  
 
-## Known Issues & Limitations
 
-*   **Data Collection:** As mentioned, `yfinance` currently fails to download data for the specified European symbols. The project uses dummy data in `data/raw/` for demonstration and testing purposes. The results generated will be based on this limited dummy data.
+  - **Market Regimes**  
+    
+    ![Market Regimes](results/figures/benchmark_eurostoxx50_market_market_regimes.png)
+    
 
+  - **Volatility Regimes**  
+    
+    ![Volatility Regimes](results/figures/benchmark_eurostoxx50_volatility_volatility_regimes.png)
+    
+
+  - **Correlation Regimes**  
+    
+    ![Correlation Regimes](results/figures/portfolio_correlation_correlation_regimes.png)
+    
+
+  ---
+
+  ### 5. Conclusion
+  ```markdown
+  The combined framework provides insights into changing market environments. Adapt this pipeline to other assets or extend with additional methods.
+  ```
+
+  ---
+
+  ## Outputs & Artifacts
+  ```markdown
+  - **Processed Data:** data/processed/*.csv
+  - **Models & Tables:** results/tables/*.csv
+  - **Figures:** results/figures/*.png
+  ```
+
+  ---
+
+  ## Known Issues & Limitations
+ 
+  - `collect_data.py` uses dummy data for some European tickers; update data source as needed.
+  - The clustering results and subsequent regime classifications are highly dependent on both the characteristics of the input data (e.g., time span, asset universe, sampling frequency) and the choice of the number of clusters k, which directly defines the number of regimes. An inappropriate k can lead to overfitting (too many regimes capturing noise) or oversmoothing (too few regimes obscuring meaningful dynamics).
+  - Regime identification via unsupervised methods involves a trade-off between model complexity and interpretability; careful validation (e.g., silhouette analysis, cross-validation of clustering stability, or information criteria) is required to select appropriate hyperparameters.
+  - Results are illustrative; for robust inference, calibrate hyperparameters, perform sensitivity analysis across different k values, and validate on extended or out-of-sample data.
+  
