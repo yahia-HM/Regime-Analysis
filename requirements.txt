@@ -1,0 +1,14 @@
+pandas==2.0.0
+numpy==1.24.3
+matplotlib==3.7.1
+seaborn==0.12.2
+yfinance==0.2.18
+scipy==1.10.1
+scikit-learn==1.2.2
+statsmodels==0.13.5
+jupyter==1.0.0
+notebook==6.5.4
+plotly==5.14.1
+tqdm==4.65.0
+
+hmmlearn>=0.3.0
